@@ -1,0 +1,45 @@
+application:
+  subdomain: jetlog
+  multi_instance: false
+  # jetlog has a hardcoded first-run admin:admin account with no environment
+  # override (database.py seeds it unconditionally), so it must NOT be exposed
+  # via public_path; the platform login gate stays the first line of defense.
+  upstreams:
+    - location: /package-licenses/
+      backend: file:///lzcapp/pkg/content/licenses/
+    - location: /
+      backend: http://jetlog:3000/
+
+services:
+  jetlog:
+    # upstream: pbogre/jetlog:1.1.8 (official image, ghcr mirror of source repo)
+    image: docker.1ms.run/pbogre/jetlog:1.1.8
+    environment:
+      - DATA_PATH=/data
+      # SECRET_KEY is required upstream with no default; pin it so sessions
+      # survive container recreation.
+      - SECRET_KEY={{ printf "%s%s" (stable_secret "jetlog_secret_a") (stable_secret "jetlog_secret_b") }}
+      - TOKEN_DURATION=7
+      - ENABLE_EXTERNAL_APIS=true
+      - TZ=Asia/Shanghai
+    binds:
+      - /lzcapp/var/data:/data
+
+usage: |
+  jetlog 是一个个人飞行日志（flight log）：记录乘坐过的航班、机场与航司，
+  自动生成统计数据、世界地图轨迹与飞行积分。
+
+  使用方法：
+  1. 打开应用，使用默认账号登录：用户名 admin，密码 admin。
+  2. 登录后第一件事：点击右上角头像进入用户设置，立即修改默认密码。
+  3. 如需多人使用，用 admin 账号在 Users 页面为其他成员创建账号。
+  4. 在 Flights 页面添加航班（机场/航司数据库已内置，可自动补全）。
+
+  数据与安全：
+  - 首次启动会创建固定的 admin/admin 账号，上游未提供环境变量覆盖，
+    因此本包不对外开放未登录访问（保持平台入口鉴权）。登录后请立刻改密码。
+  - 数据保存在 /lzcapp/var/data（SQLite），卸载应用会一并删除，请定期备份。
+  - 会话签名密钥已固定，重建容器后登录状态不丢失。
+
+  说明：
+  - 本包未做实机验证，功能以官方文档为准，遇到问题请反馈。

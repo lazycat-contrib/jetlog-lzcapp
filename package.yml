@@ -1,0 +1,18 @@
+package: community.lazycat.app.jetlog
+name: jetlog
+version: 1.1.8
+description: "Personal flight log: track flights, airports, airlines with rich statistics."
+min_os_version: "1.5.0"
+homepage: https://github.com/pbogre/jetlog
+author: pbogre
+license: GPL-2.0
+permissions:
+  required:
+    - net.internet
+locales:
+  zh:
+    name: Jetlog 飞行日志
+    description: "个人飞行记录仪：记录航班、机场、航司，自动生成统计数据与地图轨迹。"
+  en:
+    name: Jetlog
+    description: "Personal flight tracker and viewer with statistics and world map."
