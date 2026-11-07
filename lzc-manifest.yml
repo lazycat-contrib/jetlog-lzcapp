@@ -9,10 +9,9 @@ application:
       backend: file:///lzcapp/pkg/content/licenses/
     - location: /
       backend: http://jetlog:3000/
-
 services:
   jetlog:
-    # upstream: pbogre/jetlog:1.1.8 (official image, ghcr mirror of source repo)
+    # upstream: pbogre/jetlog:1.1.8
     image: docker.1ms.run/pbogre/jetlog:1.1.8
     environment:
       - DATA_PATH=/data
@@ -24,7 +23,6 @@ services:
       - TZ=Asia/Shanghai
     binds:
       - /lzcapp/var/data:/data
-
 usage: |
   jetlog 是一个个人飞行日志（flight log）：记录乘坐过的航班、机场与航司，
   自动生成统计数据、世界地图轨迹与飞行积分。
